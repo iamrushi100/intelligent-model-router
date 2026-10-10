@@ -1,0 +1,53 @@
+# Python virtual environment
+
+.venv/
+venv/
+
+# Python cache and compiled files
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Local environment variables and secrets
+
+.env
+.env.*
+!.env.example
+
+# SQLite databases
+
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite-journal
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+
+# Test and coverage output
+
+.pytest_cache/
+.pytest-test-*/
+.coverage
+.coverage.*
+htmlcov/
+
+# Benchmark output (keep benchmark source and datasets)
+
+benchmark-results/
+benchmark_results/
+benchmarks/results/
+benchmarks/output/
+
+# Editor and operating-system clutter
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

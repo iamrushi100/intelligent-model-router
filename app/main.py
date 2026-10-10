@@ -20,6 +20,90 @@ from app.sensitivity import detect_sensitivity, effective_sensitivity
 from app.usage import ApiKeyAuthenticator, QuotaExceeded, QuotaLedger, RateLimiter
 
 
+class RequestBodyLimitMiddleware:
+    """Boundedly read actual ASGI body bytes while allowing auth to run first."""
+
+    def __init__(self, app, max_bytes: int) -> None:
+        self.app = app
+        self.max_bytes = max_bytes
+
+    async def __call__(self, scope, receive, send) -> None:
+        if not (
+            scope["type"] == "http"
+            and scope["method"] == "POST"
+            and scope["path"] == "/route"
+        ):
+            await self.app(scope, receive, send)
+            return
+
+        content_lengths = [
+            value for name, value in scope.get("headers", ())
+            if name.lower() == b"content-length"
+        ]
+        # A single parseable oversized length can be rejected without consuming the body.
+        # Missing, malformed, duplicate, or smaller lengths still go through byte counting.
+        if len(content_lengths) == 1:
+            try:
+                declared_length = int(content_lengths[0].decode("ascii").strip())
+            except (UnicodeDecodeError, ValueError):
+                declared_length = -1
+            if declared_length > self.max_bytes:
+                response = JSONResponse(
+                    status_code=413,
+                    content={"detail": "Request body exceeds the configured size limit."},
+                )
+                await response(scope, receive, send)
+                return
+
+        # Keep references to ASGI-provided chunks rather than joining them into a
+        # bytearray and copying the complete body again during replay.
+        body_chunks: list[bytes] = []
+        disconnected = False
+        received_bytes = 0
+        while True:
+            message = await receive()
+            if message["type"] == "http.request":
+                chunk = message.get("body", b"")
+                if received_bytes + len(chunk) > self.max_bytes:
+                    response = JSONResponse(
+                        status_code=413,
+                        content={"detail": "Request body exceeds the configured size limit."},
+                    )
+                    await response(scope, receive, send)
+                    return
+                received_bytes += len(chunk)
+                if chunk:
+                    body_chunks.append(chunk)
+                if not message.get("more_body", False):
+                    break
+            elif message["type"] == "http.disconnect":
+                disconnected = True
+                break
+
+        body_replayed = False
+        replay_index = 0
+        had_body_chunks = bool(body_chunks)
+
+        async def replay_body():
+            nonlocal body_replayed, replay_index
+            if disconnected:
+                return {"type": "http.disconnect"}
+            if replay_index < len(body_chunks):
+                chunk = body_chunks[replay_index]
+                replay_index += 1
+                return {
+                    "type": "http.request",
+                    "body": chunk,
+                    "more_body": replay_index < len(body_chunks),
+                }
+            if not had_body_chunks and not body_replayed:
+                body_replayed = True
+                return {"type": "http.request", "body": b"", "more_body": False}
+            return {"type": "http.disconnect"}
+
+        await self.app(scope, replay_body, send)
+
+
 def create_app(
     settings: Settings | None = None,
     catalog: ModelCatalog | None = None,
@@ -27,6 +111,13 @@ def create_app(
 ) -> FastAPI:
     app_settings = settings or load_settings()
     application = FastAPI(title=app_settings.app_name)
+    # Added before the auth middleware below; Starlette places later additions outside it,
+    # so unauthenticated requests retain the existing early 401 behavior.
+    application.add_middleware(
+        RequestBodyLimitMiddleware,
+        max_bytes=app_settings.max_request_body_bytes,
+    )
+
     model_catalog = catalog or load_model_catalog()
     if provider is None:
         providers = {model.model_id: MockProvider() for model in model_catalog.models}

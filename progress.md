@@ -52,3 +52,20 @@
 
 **Next milestone:** Benchmarking and documentation, per the project plan.
 
+
+## Milestone 5 - end-to-end integration and reproducible benchmark
+
+**Status:** Complete; full suite passed (80 passed, 1 Starlette deprecation warning).
+
+- Added API-flow integration coverage for public health, authentication, restricted-data denial, transient retry plus one fallback, single-request quota accounting, open circuits, audit statuses, and privacy-safe error/audit content.
+- Added a 50-case artificial public dataset (10 prompts for each supported task), machine-readable expected task/minimum-tier/outcome labels, and benchmark documentation.
+- Added a standalone benchmark that reuses the router's sensitivity detection, policy/eligibility ranking, character-count token estimate, and synthetic model costs. The fixed `mock-large` baseline is counted only where approved and capable. No provider, API quota, or audit path is invoked.
+- The benchmark reports routed/baseline availability and costs by task, plus savings only when baseline cost is positive. Its synthetic routing check validates minimum-tier labels; it does not evaluate model answers or quality.
+
+**Verification:** `.venv\Scripts\python.exe -m pytest -q` - 80 passed, 1 Starlette deprecation warning (the installed HTTPX test-client integration). `.venv\Scripts\python.exe scripts\run_benchmark.py` ran twice; both outputs had SHA-256 `6E0A0C270681C9F882D0036915D66133275CFCDC73951C68E22B45BCC02ADE77`.
+
+**Illustrative benchmark result:** routed estimated total `$0.0164486`; fixed `mock-large` baseline `$0.0348275`; estimated difference `$0.0183789` (`52.77123%`). 50/50 cases were available on both sides, and 50/50 synthetic minimum-tier checks passed. These are synthetic catalog estimates, not real provider savings or quality results.
+
+**Limitations:** Outputs depend on illustrative `models.yaml` prices and approximate `ceil(prompt characters / 4)` token estimates. Dataset cases are all public and routable, so denied/unavailable counts are reported but zero in this sample. No model quality, latency, or production savings is measured.
+
+**Next milestone:** Review benchmark interpretation and project documentation; no hosted providers are added.

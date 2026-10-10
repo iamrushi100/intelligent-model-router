@@ -1,0 +1,455 @@
+{
+  "description": "50 artificial public prompts; labels describe expected task eligibility/minimum tier, not model answer quality.",
+  "cases": [
+    {
+      "id": "classification-01",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 1: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-02",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 2: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-03",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 3: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-04",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 4: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-05",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 5: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-06",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 6: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-07",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 7: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-08",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 8: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-09",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 9: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "classification-10",
+      "task_type": "classification",
+      "sensitivity": "public",
+      "prompt": "Choose the category for fictional item 10: blue widget; labels are alpha, beta, gamma.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-01",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 1: code=ZX001; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-02",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 2: code=ZX002; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-03",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 3: code=ZX003; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-04",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 4: code=ZX004; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-05",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 5: code=ZX005; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-06",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 6: code=ZX006; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-07",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 7: code=ZX007; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-08",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 8: code=ZX008; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-09",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 9: code=ZX009; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "extraction-10",
+      "task_type": "extraction",
+      "sensitivity": "public",
+      "prompt": "Extract the fictional code and status from record 10: code=ZX010; status=ready.",
+      "expected_minimum_tier": "small",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-01",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 1: the blue team completed phase 1, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-02",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 2: the blue team completed phase 2, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-03",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 3: the blue team completed phase 3, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-04",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 4: the blue team completed phase 4, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-05",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 5: the blue team completed phase 5, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-06",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 6: the blue team completed phase 6, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-07",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 7: the blue team completed phase 7, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-08",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 8: the blue team completed phase 8, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-09",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 9: the blue team completed phase 9, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "summarization-10",
+      "task_type": "summarization",
+      "sensitivity": "public",
+      "prompt": "Summarize this fictional note 10: the blue team completed phase 10, then recorded a routine status update.",
+      "expected_minimum_tier": "medium",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-01",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 1, add 1 and 1, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-02",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 2, add 2 and 2, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-03",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 3, add 3 and 3, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-04",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 4, add 4 and 4, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-05",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 5, add 5 and 5, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-06",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 6, add 6 and 6, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-07",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 7, add 7 and 7, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-08",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 8, add 8 and 8, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-09",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 9, add 9 and 9, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "reasoning-10",
+      "task_type": "reasoning",
+      "sensitivity": "public",
+      "prompt": "For fictional puzzle 10, add 10 and 10, then divide the result by two. State the result.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-01",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 1 that returns the integer 1 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-02",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 2 that returns the integer 2 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-03",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 3 that returns the integer 3 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-04",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 4 that returns the integer 4 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-05",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 5 that returns the integer 5 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-06",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 6 that returns the integer 6 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-07",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 7 that returns the integer 7 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-08",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 8 that returns the integer 8 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-09",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 9 that returns the integer 9 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    },
+    {
+      "id": "coding-10",
+      "task_type": "coding",
+      "sensitivity": "public",
+      "prompt": "Write a tiny Python function for fictional exercise 10 that returns the integer 10 plus one.",
+      "expected_minimum_tier": "large",
+      "expected_outcome": "routable",
+      "output_tokens": 64
+    }
+  ]
+}

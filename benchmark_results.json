@@ -1,0 +1,76 @@
+{
+  "assumptions": [
+    "Prices are illustrative synthetic catalog values, not provider invoices.",
+    "All prompts are artificial and public; both routed and baseline choices obey sensitivity, capability, and context rules.",
+    "The fixed mock-large baseline is used only when policy and capability permit it.",
+    "Routing label checks verify expected minimum tier only; they do not measure answer correctness or LLM quality.",
+    "No provider is invoked and API quotas/audit records are not used by this benchmark."
+  ],
+  "baseline_available_cases": 50,
+  "baseline_total_cost_usd": 0.0348275,
+  "benchmark_type": "synthetic routing and illustrative cost estimate; no model quality measured",
+  "case_count": 50,
+  "estimated_savings_percent": 52.77123,
+  "estimated_savings_usd": 0.0183789,
+  "fixed_baseline_model": "mock-large",
+  "output_token_estimate_per_case": "dataset output_tokens value; same for routed and baseline",
+  "routed_available_cases": 50,
+  "routed_total_cost_usd": 0.0164486,
+  "synthetic_routing_checks": {
+    "checked": 50,
+    "passed": 50
+  },
+  "tasks": {
+    "classification": {
+      "baseline_available": 10,
+      "baseline_cost_usd": 0.00695,
+      "baseline_denied_or_unavailable": 0,
+      "count": 10,
+      "routed_available": 10,
+      "routed_cost_usd": 0.000417,
+      "routed_denied_or_unavailable": 0,
+      "synthetic_routing_checks_passed": 10
+    },
+    "coding": {
+      "baseline_available": 10,
+      "baseline_cost_usd": 0.006975,
+      "baseline_denied_or_unavailable": 0,
+      "count": 10,
+      "routed_available": 10,
+      "routed_cost_usd": 0.006975,
+      "routed_denied_or_unavailable": 0,
+      "synthetic_routing_checks_passed": 10
+    },
+    "extraction": {
+      "baseline_available": 10,
+      "baseline_cost_usd": 0.0069,
+      "baseline_denied_or_unavailable": 0,
+      "count": 10,
+      "routed_available": 10,
+      "routed_cost_usd": 0.000414,
+      "routed_denied_or_unavailable": 0,
+      "synthetic_routing_checks_passed": 10
+    },
+    "reasoning": {
+      "baseline_available": 10,
+      "baseline_cost_usd": 0.00695,
+      "baseline_denied_or_unavailable": 0,
+      "count": 10,
+      "routed_available": 10,
+      "routed_cost_usd": 0.00695,
+      "routed_denied_or_unavailable": 0,
+      "synthetic_routing_checks_passed": 10
+    },
+    "summarization": {
+      "baseline_available": 10,
+      "baseline_cost_usd": 0.0070525,
+      "baseline_denied_or_unavailable": 0,
+      "count": 10,
+      "routed_available": 10,
+      "routed_cost_usd": 0.0016926,
+      "routed_denied_or_unavailable": 0,
+      "synthetic_routing_checks_passed": 10
+    }
+  },
+  "token_estimator": "ceil(prompt characters / 4); approximate"
+}

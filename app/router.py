@@ -52,6 +52,14 @@ def choose_model(
     effective_level: Sensitivity,
     catalog: ModelCatalog,
 ) -> RoutingDecision:
+    return rank_models(request, effective_level, catalog)[0]
+
+
+def rank_models(
+    request: RouteRequest,
+    effective_level: Sensitivity,
+    catalog: ModelCatalog,
+) -> list[RoutingDecision]:
     # Authorization is deliberately completed before any capability or cost checks.
     approved = [model for model in catalog.models if effective_level in model.approved_for]
     if not approved:
@@ -79,20 +87,22 @@ def choose_model(
     if not within_budget:
         raise NoEligibleModel
 
-    model, cost = min(
+    ranked = sorted(
         within_budget,
         key=lambda item: (item[1], _TIER_ORDER[item[0].tier], item[0].model_id),
     )
-    reason = (
-        f"Selected {model.model_id}: approved for {effective_level.value}, "
-        f"supports {request.task_type.value}, meets the {minimum_tier} minimum, "
-        "fits the estimated context, and is within the requested cost limit."
-    )
-    return RoutingDecision(
-        model=model,
-        effective_sensitivity=effective_level,
-        input_tokens=input_tokens,
-        output_budget_tokens=output_budget,
-        estimated_cost_usd=cost,
-        reason=reason,
-    )
+    return [
+        RoutingDecision(
+            model=model,
+            effective_sensitivity=effective_level,
+            input_tokens=input_tokens,
+            output_budget_tokens=output_budget,
+            estimated_cost_usd=cost,
+            reason=(
+                f"Selected {model.model_id}: approved for {effective_level.value}, "
+                f"supports {request.task_type.value}, meets the {minimum_tier} minimum, "
+                "fits the estimated context, and is within the requested cost limit."
+            ),
+        )
+        for model, cost in ranked
+    ]

@@ -12,6 +12,8 @@ class Settings:
     max_prompt_chars: int = 20_000
     max_output_tokens: int = 2_048
     max_request_body_bytes: int = 65_536
+    provider_timeout_seconds: float = 15.0
+    provider_retry_delay_seconds: float = 1.0
 
     def __post_init__(self) -> None:
         if not self.app_name.strip():
@@ -24,6 +26,10 @@ class Settings:
             raise ValueError("max_output_tokens must be positive")
         if self.max_request_body_bytes < 1:
             raise ValueError("max_request_body_bytes must be positive")
+        if self.provider_timeout_seconds <= 0:
+            raise ValueError("provider_timeout_seconds must be positive")
+        if self.provider_retry_delay_seconds < 0:
+            raise ValueError("provider_retry_delay_seconds must not be negative")
 
 
 def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
@@ -36,6 +42,10 @@ def load_settings(environ: Mapping[str, str] | None = None) -> Settings:
             max_prompt_chars=int(values.get("ROUTER_MAX_PROMPT_CHARS", "20000")),
             max_output_tokens=int(values.get("ROUTER_MAX_OUTPUT_TOKENS", "2048")),
             max_request_body_bytes=int(values.get("ROUTER_MAX_REQUEST_BODY_BYTES", "65536")),
+            provider_timeout_seconds=float(values.get("ROUTER_PROVIDER_TIMEOUT_SECONDS", "15")),
+            provider_retry_delay_seconds=float(
+                values.get("ROUTER_PROVIDER_RETRY_DELAY_SECONDS", "1")
+            ),
         )
     except ValueError as exc:
         raise ValueError(f"Invalid router configuration: {exc}") from exc

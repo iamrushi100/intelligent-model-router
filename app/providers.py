@@ -10,6 +10,39 @@ class Provider(Protocol):
     async def generate(self, request: RouteRequest, model: ModelDefinition) -> str: ...
 
 
+class ProviderFailure(Exception):
+    """Sanitized base category for failures returned by provider adapters."""
+
+    retryable = False
+
+
+class TransientProviderFailure(ProviderFailure):
+    """A provider failure that may succeed on one bounded retry."""
+
+    retryable = True
+
+
+class ProviderTimeoutFailure(TransientProviderFailure):
+    """Provider execution exceeded its configured timeout."""
+
+
+class ProviderConnectionFailure(TransientProviderFailure):
+    """A provider adapter reported a connection failure."""
+
+
+class PermanentProviderFailure(ProviderFailure):
+    """A non-retryable provider error, including ordinary HTTP 4xx."""
+
+
+class ProviderHTTPFailure(ProviderFailure):
+    """HTTP adapter error categorized by status without exposing its body."""
+
+    def __init__(self, status_code: int) -> None:
+        super().__init__(f"Provider returned HTTP {status_code}")
+        self.status_code = status_code
+        self.retryable = status_code in {408, 429} or 500 <= status_code <= 599
+
+
 class MockProvider:
     """Return fixed task-appropriate output without echoing or transmitting input."""
 

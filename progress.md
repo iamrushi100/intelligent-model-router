@@ -21,3 +21,17 @@
 **Verification:** `.venv\Scripts\python.exe -m pytest -q` — 40 passed. Pytest reports a Starlette deprecation warning for its current HTTPX test-client integration.
 
 **Next milestone:** Milestone 3 — bounded provider resilience (retry, fallback, and circuit breaker).
+
+## Milestone 3 — Provider reliability
+
+**Status:** Complete; full test suite passed (68 passed, 1 dependency deprecation warning).
+
+- Added typed transient/permanent provider errors and configurable 15-second timeout / 1-second retry delay.
+- Provider calls run sequentially under `asyncio.wait_for`; timeout cancels the async task, but future adapters must still account for remote work that may continue after cancellation.
+- A request gets at most one retry total, then at most one next-cheapest eligible fallback. Fallback candidates are re-evaluated through the complete policy and eligibility pipeline.
+- Circuit breakers are lock-protected and scoped to provider instances. Only the final outcome of each logical retry sequence increments the failure count; threshold is 3, cooldown 30 seconds, with one concurrent half-open trial.
+- Breaker state is in-process and resets on application restart; it is not coordinated between workers. Mock provider remains the default and makes no network calls.
+
+**Verification:** `.venv\Scripts\python.exe -m pytest -q` — 68 passed. One Starlette deprecation warning remains for the installed HTTPX test-client integration.
+
+**Next milestone:** Milestone 4 — authentication, usage limits, and safe logs.

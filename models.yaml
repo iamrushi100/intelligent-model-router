@@ -1,0 +1,28 @@
+# All identifiers, context windows, capabilities, and prices below are
+# illustrative demo values, not verified provider specifications or quotes.
+# Mock models do not represent verified private or local processing.
+models:
+  - model_id: mock-small
+    tier: small
+    context_window: 8192
+    capabilities: [classification, extraction]
+    input_price_per_million: 0.15
+    output_price_per_million: 0.60
+    approved_for: [public]
+    is_local: false
+  - model_id: mock-medium
+    tier: medium
+    context_window: 16384
+    capabilities: [classification, extraction, summarization]
+    input_price_per_million: 0.60
+    output_price_per_million: 2.40
+    approved_for: [public, internal]
+    is_local: false
+  - model_id: mock-large
+    tier: large
+    context_window: 32768
+    capabilities: [classification, extraction, summarization, reasoning, coding]
+    input_price_per_million: 2.50
+    output_price_per_million: 10.00
+    approved_for: [public, internal, confidential]
+    is_local: false

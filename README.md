@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Intelligent Model Router
 
 A small FastAPI portfolio project that demonstrates **rule-based, policy-aware model routing**. It is not a trained machine-learning router. The default provider is deterministic mock behavior, so requests do not reach a hosted LLM or leave the process.
@@ -201,3 +202,7 @@ intelligent_model_router_final_project_plan.md
 ```
 
 Further reading: [architecture details](docs/ARCHITECTURE.md), [placement interview preparation](docs/PLACEMENT_INTERVIEW.md), [project plan](intelligent_model_router_final_project_plan.md), and [progress history](progress.md).
+=======
+# intelligent-model-router
+Policy-based AI model routing API with sensitivity controls, reliability mechanisms, usage limits, benchmarking, and a Streamlit demo frontend.
+>>>>>>> origin/main

@@ -7,7 +7,7 @@ from threading import Lock
 import time
 from typing import Awaitable, Callable, Mapping
 
-from app.model_config import ModelCatalog
+from app.model_config import ModelCatalog, ModelDefinition
 from app.providers import (
     PermanentProviderFailure,
     Provider,
@@ -32,9 +32,18 @@ class CircuitOpenError(Exception):
 class ProviderUnavailableError(Exception):
     """No available eligible provider/model completed the request."""
 
-    def __init__(self, status_code: int = 502) -> None:
+    def __init__(
+        self,
+        status_code: int = 502,
+        attempted_models: tuple[ModelDefinition, ...] = (),
+        retry_count: int = 0,
+        attempt_count: int = 0,
+    ) -> None:
         super().__init__()
         self.status_code = status_code
+        self.attempted_models = attempted_models
+        self.retry_count = retry_count
+        self.attempt_count = attempt_count
 
 
 class CircuitBreaker:
@@ -111,6 +120,7 @@ class ProviderResult:
     fallback_used: bool
     retry_count: int
     attempt_count: int
+    attempted_models: tuple[ModelDefinition, ...]
 
 
 @dataclass(frozen=True)
@@ -118,6 +128,7 @@ class _AttemptResult:
     output: str
     retry_count: int
     attempt_count: int
+    attempted_models: tuple[ModelDefinition, ...]
 
 
 class ProviderExecutor:
@@ -169,6 +180,7 @@ class ProviderExecutor:
         ranked = rank_models(request, effective, catalog)
         primary = ranked[0]
         attempted_model_ids = {primary.model.model_id}
+        attempted_models: tuple[ModelDefinition, ...] = ()
         retry_count = 0
         attempt_count = 0
         primary_provider = self.providers.get(primary.model.model_id)
@@ -176,7 +188,14 @@ class ProviderExecutor:
             raise ProviderUnavailableError from None
         try:
             first = await self._execute_one(request, primary, primary_provider)
-            return ProviderResult(first.output, primary, False, first.retry_count, first.attempt_count)
+            return ProviderResult(
+                first.output,
+                primary,
+                False,
+                first.retry_count,
+                first.attempt_count,
+                first.attempted_models,
+            )
         except CircuitOpenError as exc:
             failure: Exception = exc
         except ProviderFailure as exc:
@@ -186,11 +205,14 @@ class ProviderExecutor:
             retry_count += getattr(exc, "retry_count", 0)
             attempt_count += getattr(exc, "attempt_count", 0)
         except _ExecutionFailure as exc:
-            if not exc.failure.retryable:
-                raise ProviderUnavailableError(_failure_status(exc.failure)) from None
-            failure = exc.failure
+            attempted_models = exc.attempted_models
             retry_count += exc.retry_count
             attempt_count += exc.attempt_count
+            if not exc.failure.retryable:
+                raise ProviderUnavailableError(
+                    _failure_status(exc.failure), attempted_models, retry_count, attempt_count
+                ) from None
+            failure = exc.failure
 
         # Recompute the full policy/capability/context/cost candidate set before fallback.
         rechecked = rank_models(request, effective, catalog)
@@ -199,7 +221,9 @@ class ProviderExecutor:
             None,
         )
         if fallback is None:
-            raise ProviderUnavailableError(_failure_status(failure)) from None
+            raise ProviderUnavailableError(
+                _failure_status(failure), attempted_models, retry_count, attempt_count
+            ) from None
         fallback_provider = self.providers.get(fallback.model.model_id)
         if fallback_provider is None:
             raise ProviderUnavailableError from None
@@ -216,17 +240,25 @@ class ProviderExecutor:
                 True,
                 retry_count + second.retry_count,
                 attempt_count + second.attempt_count,
+                attempted_models + second.attempted_models,
             )
         except (CircuitOpenError, ProviderFailure, _ExecutionFailure) as exc:
+            second_models: tuple[ModelDefinition, ...] = ()
             if isinstance(exc, _ExecutionFailure):
                 retry_count += exc.retry_count
                 attempt_count += exc.attempt_count
+                second_models = exc.attempted_models
                 status_code = _failure_status(exc.failure)
             elif isinstance(exc, ProviderFailure):
                 status_code = _failure_status(exc)
             else:
                 status_code = 503
-            raise ProviderUnavailableError(status_code) from None
+            raise ProviderUnavailableError(
+                status_code,
+                attempted_models + second_models,
+                retry_count,
+                attempt_count,
+            ) from None
 
     async def _execute_one(
         self,
@@ -239,9 +271,11 @@ class ProviderExecutor:
         breaker.acquire()
         attempts = 0
         retries = 0
+        attempted_models: list[ModelDefinition] = []
         maximum_attempts = 2 if retry_allowed else 1
         while attempts < maximum_attempts:
             attempts += 1
+            attempted_models.append(decision.model)
             try:
                 output = await asyncio.wait_for(
                     provider.generate(request, decision.model), timeout=self.timeout_seconds
@@ -259,7 +293,7 @@ class ProviderExecutor:
                 failure = PermanentProviderFailure()
             else:
                 breaker.record_success()
-                return _AttemptResult(output, retries, attempts)
+                return _AttemptResult(output, retries, attempts, tuple(attempted_models))
 
             if failure.retryable and attempts == 1 and retry_allowed:
                 retries = 1
@@ -275,16 +309,23 @@ class ProviderExecutor:
                 breaker.record_retryable_failure()
             else:
                 breaker.record_permanent_failure()
-            raise _ExecutionFailure(failure, retries, attempts) from None
+            raise _ExecutionFailure(failure, retries, attempts, tuple(attempted_models)) from None
         raise AssertionError("bounded retry loop exhausted unexpectedly")
 
 
 class _ExecutionFailure(Exception):
-    def __init__(self, failure: ProviderFailure, retry_count: int, attempt_count: int) -> None:
+    def __init__(
+        self,
+        failure: ProviderFailure,
+        retry_count: int,
+        attempt_count: int,
+        attempted_models: tuple[ModelDefinition, ...],
+    ) -> None:
         super().__init__()
         self.failure = failure
         self.retry_count = retry_count
         self.attempt_count = attempt_count
+        self.attempted_models = attempted_models
 
 
 def _failure_status(failure: Exception) -> int:

@@ -55,6 +55,15 @@ def one_model_catalog() -> ModelCatalog:
     return ModelCatalog(models=[catalog.model_by_id("mock-small")])
 
 
+def make_settings(tmp_path, **overrides: Any) -> Settings:
+    values: dict[str, Any] = {
+        "api_keys": ("test-api-key",),
+        "database_path": str(tmp_path / "audit.sqlite3"),
+    }
+    values.update(overrides)
+    return Settings(**values)
+
+
 def public_classification() -> RouteRequest:
     return RouteRequest(prompt="classify this", task_type="classification", sensitivity="public")
 
@@ -370,7 +379,7 @@ def test_permanent_error_does_not_attempt_fallback() -> None:
     assert fallback.calls == []
 
 
-def test_http_timeout_is_controlled_and_cancels_async_provider_work() -> None:
+def test_http_timeout_is_controlled_and_cancels_async_provider_work(tmp_path) -> None:
     class SlowProvider:
         def __init__(self) -> None:
             self.calls = 0
@@ -385,11 +394,14 @@ def test_http_timeout_is_controlled_and_cancels_async_provider_work() -> None:
             return "late"
 
     provider = SlowProvider()
-    settings = Settings(provider_timeout_seconds=0.01, provider_retry_delay_seconds=0)
+    settings = make_settings(
+        tmp_path, provider_timeout_seconds=0.01, provider_retry_delay_seconds=0
+    )
     client = TestClient(create_app(settings=settings, catalog=one_model_catalog(), provider=provider))
     response = client.post(
         "/route",
         json={"prompt": "classify this", "task_type": "classification", "sensitivity": "public"},
+        headers={"X-API-Key": "test-api-key"},
     )
 
     assert response.status_code == 504
@@ -401,11 +413,11 @@ def test_http_timeout_is_controlled_and_cancels_async_provider_work() -> None:
     assert provider.cancelled
 
 
-def test_permanent_provider_error_is_sanitized_at_http_boundary() -> None:
+def test_permanent_provider_error_is_sanitized_at_http_boundary(tmp_path) -> None:
     provider = ScriptedProvider(PermanentProviderFailure("provider-secret-stack-detail"))
     client = TestClient(
         create_app(
-            settings=Settings(provider_retry_delay_seconds=0),
+            settings=make_settings(tmp_path, provider_retry_delay_seconds=0),
             catalog=one_model_catalog(),
             provider=provider,
         )
@@ -413,6 +425,7 @@ def test_permanent_provider_error_is_sanitized_at_http_boundary() -> None:
     response = client.post(
         "/route",
         json={"prompt": "classify this", "task_type": "classification", "sensitivity": "public"},
+        headers={"X-API-Key": "test-api-key"},
     )
 
     assert response.status_code == 502
@@ -423,13 +436,15 @@ def test_permanent_provider_error_is_sanitized_at_http_boundary() -> None:
     assert provider.calls == ["mock-small"]
 
 
-def test_endpoint_reports_retry_and_fallback_counts() -> None:
+def test_endpoint_reports_retry_and_fallback_counts(tmp_path) -> None:
     catalog = load_model_catalog()
     primary = ScriptedProvider(TransientProviderFailure(), TransientProviderFailure())
     fallback = ScriptedProvider("safe output")
     client = TestClient(
         create_app(
-            settings=Settings(provider_timeout_seconds=1, provider_retry_delay_seconds=0),
+            settings=make_settings(
+                tmp_path, provider_timeout_seconds=1, provider_retry_delay_seconds=0
+            ),
             catalog=catalog,
             provider={
                 "mock-small": primary,
@@ -441,6 +456,7 @@ def test_endpoint_reports_retry_and_fallback_counts() -> None:
     response = client.post(
         "/route",
         json={"prompt": "classify this", "task_type": "classification", "sensitivity": "public"},
+        headers={"X-API-Key": "test-api-key"},
     )
 
     assert response.status_code == 200
@@ -450,9 +466,11 @@ def test_endpoint_reports_retry_and_fallback_counts() -> None:
     assert response.json()["fallback_used"] is True
 
 
-def test_policy_denial_does_not_invoke_provider_or_fallback() -> None:
+def test_policy_denial_does_not_invoke_provider_or_fallback(tmp_path) -> None:
     provider = ScriptedProvider()
-    client = TestClient(create_app(provider=provider))
+    client = TestClient(
+        create_app(settings=make_settings(tmp_path), provider=provider)
+    )
     response = client.post(
         "/route",
         json={
@@ -460,6 +478,7 @@ def test_policy_denial_does_not_invoke_provider_or_fallback() -> None:
             "task_type": "classification",
             "sensitivity": "public",
         },
+        headers={"X-API-Key": "test-api-key"},
     )
     assert response.status_code == 403
     assert provider.calls == []

@@ -129,6 +129,41 @@ Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/route `
 
 The response follows `RouteResponse`; for the mock provider it includes fields such as `output` (`mock-classification`), `model_used` (normally `mock-small` for this public classification), `final_sensitivity`, `decision_reason`, `fallback_used`, `latency_ms`, `estimated_cost_usd`, `input_tokens`, `output_tokens`, `retry_count`, and `attempt_count`. Measured latency varies per run. Invalid or missing credentials return `401`; oversized authenticated route bodies return `413`; policy denial returns `403`; invalid or ineligible requests return `422`; rate/quota denials return `429`; provider failures use sanitized `502`, `503`, or `504` responses.
 
+## Optional Streamlit interface
+
+The optional frontend is a separate Streamlit client. It sends JSON over HTTP to the existing authenticated `POST /route` endpoint; routing, sensitivity policy, quotas, and provider reliability remain in FastAPI. The frontend uses the task and sensitivity choices defined by the backend schemas. The API response does not contain a model tier, so the interface displays the returned model ID without inferring a tier.
+
+Install project dependencies in the activated virtual environment (Streamlit is included in `requirements.txt`; `httpx` is already used as the HTTP client):
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Start the backend in one PowerShell window. Use a throwaway local key of your choice and keep it private:
+
+```powershell
+$env:ROUTER_API_KEYS = "choose-a-local-demo-key"
+python -m uvicorn app.main:app --reload
+```
+
+Start the frontend from the repository root in a second window with the project environment activated:
+
+```powershell
+.\.venv\Scripts\python.exe -m streamlit run frontend\streamlit_app.py
+```
+
+In the sidebar, enter the FastAPI base URL (default `http://127.0.0.1:8000`) and the same API key configured for the backend. The key is entered in a password field and sent as `X-API-Key`; it is not written to project files. `ROUTER_API_BASE_URL` can set the initial URL, or change it directly in the interface. Select a task and declared sensitivity, enter a synthetic prompt, and choose **Route request**. The result shows fields returned by the API, including the model ID, output, estimated cost, latency, effective sensitivity, retry/fallback information, and routing reason.
+
+The UI labels results as simulated: the default provider returns deterministic mock output and does not call a real LLM. Do not enter real personal, confidential, or sensitive data; the server's sensitivity checks are heuristic rather than complete DLP.
+
+### Frontend troubleshooting and limitations
+
+- **Connection error:** Start FastAPI in the other terminal and confirm the sidebar URL matches it. The default backend URL is `http://127.0.0.1:8000`.
+- **HTTP 401:** Confirm the key entered in the sidebar matches `ROUTER_API_KEYS` in the backend terminal.
+- **HTTP 403:** The effective sensitivity is not approved by any configured model; the frontend cannot override this policy.
+- **HTTP 413 or 422:** Reduce the body/prompt size or correct the selected request fields. The backend remains authoritative for limits and validation.
+- Streamlit adds only a browser UI. It does not add authentication management, routing logic, model tiers to the API response, real inference, or stronger privacy guarantees.
+
 ## Synthetic benchmark result
 
 | Comparison | Estimated total |
@@ -159,6 +194,7 @@ benchmark-data/       50-case synthetic benchmark dataset and notes
 scripts/              Benchmark command-line runner
 benchmark_results.json Reproducible synthetic benchmark output
 docs/                 Architecture and placement interview guides
+frontend/             Optional Streamlit interface and FastAPI HTTP client
 progress.md           Milestone history and verification results
 intelligent_model_router_final_project_plan.md
                       Detailed source plan and implementation roadmap

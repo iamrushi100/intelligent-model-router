@@ -4,3 +4,4 @@ pydantic
 PyYAML
 httpx
 pytest
+streamlit
